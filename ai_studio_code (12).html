@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Última Visualização - +18</title>
+    <style>
+        :root { --red: #ff0000; --bg: #030303; --text: #d1d1d1; }
+        * { box-sizing: border-box; cursor: crosshair; outline: none; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; overflow: hidden; }
+
+        /* ATMOSFERA */
+        #fog { position: fixed; top: 0; left: 0; width: 200%; height: 100%; background: url('https://www.transparenttextures.com/patterns/fog.png'); opacity: 0.8; z-index: 5; animation: fogMove 15s linear infinite; pointer-events: none; }
+        @keyframes fogMove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        #background-eyes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.pngmart.com/files/23/Creepy-Eye-PNG-File.png') center no-repeat; background-size: 60vh; opacity: 0; z-index: 1; pointer-events: none; transition: opacity 10s ease; }
+        #broken-glass { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.pngplay.com/wp-content/uploads/2/Broken-Glass-PNG-Photo-Image.png') center/cover; z-index: 10000; pointer-events: none; transform: rotate(90deg); opacity: 0; }
+
+        /* TELAS */
+        .screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; background: black; text-align: center; padding: 20px; }
+        #intro-slides { width: 250px; height: 250px; background-size: cover; border: 2px solid #400; margin-bottom: 20px; box-shadow: 0 0 30px #600; }
+        .input-box { background: transparent; border: none; border-bottom: 2px solid var(--red); color: white; text-align: center; padding: 10px; margin: 10px; font-size: 1.2em; width: 250px; }
+        .gender-btn { background: #111; border: 1px solid #444; color: #888; padding: 10px 20px; cursor: pointer; margin: 5px; }
+        .gender-btn.active { border-color: var(--red); color: white; }
+
+        /* CHAT HUD */
+        #game-interface { display: none; width: 100%; max-width: 500px; margin: 0 auto; height: 100vh; flex-direction: column; position: relative; z-index: 10; border-left: 1px solid #1a1a1a; border-right: 1px solid #1a1a1a; background: rgba(0,0,0,0.96); }
+        header { padding: 15px; background: #000; border-bottom: 2px solid var(--red); display: flex; align-items: center; gap: 15px; }
+        #pfp { width: 45px; height: 45px; border-radius: 50%; background: url('https://dk2dv4ezy246u.cloudfront.net/widgets/sChQGEJEnxLq_large.jpg') center/cover; filter: grayscale(1) contrast(1.5); }
+        #chat-log { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 4px; font-size: 1em; line-height: 1.4; opacity: 0; animation: msgIn 0.4s forwards; }
+        @keyframes msgIn { to { opacity: 1; transform: translateY(0); } from { transform: translateY(15px); } }
+        .msg.l { align-self: flex-start; background: #0d0d0d; border-left: 3px solid var(--red); color: #fff; }
+        .msg.p { align-self: flex-end; background: #001a33; border-right: 3px solid #0055ff; color: #fff; }
+        .msg.sys { align-self: center; font-size: 0.8em; color: var(--red); font-weight: bold; }
+
+        #choice-panel { padding: 20px; background: #000; border-top: 1px solid #222; }
+        .choice-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background: #0a0a0a; border: 1px solid #333; color: #aaa; text-align: left; cursor: pointer; }
+        .choice-btn:hover { border-color: var(--red); color: white; background: #1a0000; }
+
+        /* CRASH SCREEN */
+        #home-screen { display: none; background: url('https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?q=80&w=2070&auto=format&fit=crop') center/cover; z-index: 8000; }
+        .notif { width: 90%; max-width: 380px; background: rgba(255, 255, 255, 0.95); color: #000; padding: 15px; border-radius: 12px; margin: 10px 0; font-family: sans-serif; border-left: 8px solid var(--red); position: absolute; animation: shake 0.1s infinite; }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } }
+
+        #flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9000; display: none; background: black; justify-content: center; align-items: center; pointer-events: none; }
+        #flash img { max-width: 90%; filter: contrast(1.8) grayscale(1); }
+        .glitch { animation: corrupt 0.1s infinite; color: var(--red) !important; }
+        @keyframes corrupt { 0% { transform: skewX(0); } 50% { transform: skewX(10deg) scale(1.05); opacity: 0.8; } 100% { transform: skewX(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="fog"></div>
+    <div id="background-eyes"></div>
+    <div id="broken-glass"></div>
+    <div style="position:absolute; top:-999px;"><iframe id="yt" width="10" height="10" src="" allow="autoplay"></iframe></div>
+
+    <audio id="sfx-type" src="https://assets.mixkit.co/active_storage/sfx/2349/2349-preview.mp3"></audio>
+    <audio id="sfx-scream" src="https://www.myinstants.com/media/sounds/screams-of-the-damned-6761.mp3"></audio>
+    <audio id="sfx-notif" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+
+    <div id="start-screen" class="screen">
+        <div style="font-size: 10px; color: #444; letter-spacing: 5px; margin-bottom: 20px;">CLUBE BOLTER GAMES</div>
+        <div id="intro-slides" style="background-image: url('https://static.wikia.nocookie.net/eyes-the-horror-game/images/e/eb/KrasueBio2.png/revision/latest?cb=20241028220406');"></div>
+        <h1 style="color: var(--red); letter-spacing: 10px; margin: 0;">ÚLTIMA VISUALIZAÇÃO</h1>
+        <input type="text" id="p-name" class="input-box" placeholder="SEU NOME">
+        <div style="margin: 15px;">
+            <button class="gender-btn active" id="btn-m" onclick="setGender('m')">MASCULINO</button>
+            <button class="gender-btn" id="btn-f" onclick="setGender('f')">FEMININO</button>
+        </div>
+        <button class="choice-btn" style="text-align:center; width:220px; margin: 0 auto; background: #600; color: white;" onclick="begin()">INICIAR REGISTRO</button>
+    </div>
+
+    <div id="game-interface">
+        <header>
+            <div id="pfp"></div>
+            <div>
+                <div style="font-weight: bold; font-size: 16px;">L.</div>
+                <div id="status-label" style="color: #0f0; font-size: 10px;">Online</div>
+            </div>
+        </header>
+        <div id="chat-log"></div>
+        <div id="choice-panel">
+            <div id="typing" style="font-size: 10px; color: #444; height: 15px; margin-bottom: 5px;"></div>
+            <div id="choices-ui"></div>
+        </div>
+    </div>
+
+    <div id="home-screen" class="screen"><div id="notif-box" style="width:100%; height:100%; position:relative;"></div></div>
+    <div id="flash"><img id="f-img" src=""></div>
+
+    <script>
+        let config = { name: "Usuário", gender: "m", sanity: 100, battery: "4%" };
+        const horrorImgs = [
+            "https://static.wikia.nocookie.net/eyes-the-horror-game/images/e/eb/KrasueBio2.png/revision/latest?cb=20241028220406",
+            "https://www.pngmart.com/files/23/Creepy-Eye-PNG-File.png",
+            "https://png.pngtree.com/png-vector/20240821/ourmid/pngtree-3d-smoky-horror-ghost-girl-on-transparent-background-png-image_13580492.png"
+        ];
+
+        function setGender(g) {
+            config.gender = g;
+            document.getElementById('btn-m').classList.toggle('active', g === 'm');
+            document.getElementById('btn-f').classList.toggle('active', g === 'f');
+        }
+
+        async function begin() {
+            const name = document.getElementById('p-name').value.trim();
+            if(!name) return alert("Insira seu nome.");
+            config.name = name;
+
+            // Meta Bateria
+            if(navigator.getBattery) {
+                try {
+                    const b = await navigator.getBattery();
+                    config.battery = Math.floor(b.level * 100) + "%";
+                } catch(e) { config.battery = "6%"; }
+            }
+
+            document.getElementById('yt').src = "https://www.youtube.com/embed/Z6ylGHfLrdI?autoplay=1&loop=1&playlist=Z6ylGHfLrdI";
+            
+            const intro = document.getElementById('intro-slides');
+            for(let i=0; i<15; i++) {
+                intro.style.backgroundImage = `url(${horrorImgs[i%3]})`;
+                await new Promise(r => setTimeout(r, 70));
+            }
+
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-interface').style.display = 'flex';
+            playAct(0);
+        }
+
+        const script = [
+            { // 0
+                lines: ["Oi.", "Estou te vendo, {nome}.", "Você parece tão pálid{oa} hoje.", "Dá para ver o suor no seu lábio superior daqui.", "Estou observando sua webcam há dias... você não percebeu a luz piscar?", "A sua bateria está em {bateria}. Espero que você aguente até o fim."],
+                choices: [{ text: "Quem é você e como tem acesso a minha câmera?", next: 1 }, { text: "L.? Pare com essa brincadeira.", next: 1, san: -10 }]
+            },
+            { // 1
+                lines: ["Não é brincadeira, {nome}.", "Lembra do apartamento 402? O som da tranca batendo?", "Eu estava lá dentro gritando seu nome.", "Você estava lá fora... segurando a maçaneta para eu não sair.", "O fogo estava tão quente que minha pele grudou no lençol."],
+                choices: [{ text: "A porta emperrou! Eu tentei!", next: 2, san: -10 }, { text: "Eu tive medo! Eu era só um{oa} menin{oa}!", next: 2 }]
+            },
+            { // 2
+                lines: ["O medo é para os covardes.", "Você mentiu para o juiz, {nome}.", "Mas você não pode mentir para quem está atrás de você.", "Sente o cheiro de carne queimada? É o meu cheiro."],
+                choices: [{ text: "(Tentar discar 190)", next: 3, fail: "BLOQUEIO DE SISTEMA: ENTIDADE 402" }, { text: "Me perdoa... por favor.", next: 3 }]
+            },
+            { // 3
+                lines: ["Ninguém vem salvar um{oa} assassin{oa}, {nome}.", "Seu celular está morrendo.", "Olhe para trás.", "AGORA."],
+                crash: true
+            },
+            { // 4 (Pós-bug)
+                lines: ["Você viu as notificações? Eu estava gritando.", "Mas você sempre ignora o que te incomoda.", "Eu acabei de entrar no seu quarto.", "Consigo ouvir sua respiração."],
+                choices: [{ text: "Isso não é real! É um vírus!", next: 5, san: -20 }, { text: "ME MATA DE UMA VEZ!", next: 5, scream: true }]
+            },
+            { // 5
+                lines: ["Vou desligar a luz pra você.", "Tente respirar devagar... o que vive nas paredes gosta de silêncio.", "Ele está sentindo seu cheiro agora, {nome}."],
+                choices: [{ text: "(Prender a respiração)", next: 6 }, { text: "SOCORRO!", next: 6, scream: true }]
+            },
+            { // 6
+                lines: ["Faltam três passos.", "Lembra de como meus olhos explodiram com o calor?", "Vou te levar pro 402 comigo.", "Diga adeus, {nome}."],
+                choices: [{ text: "...", next: 7 }]
+            }
+        ];
+
+        async function playAct(idx) {
+            const act = script[idx];
+            if (!act) { finalize(); return; }
+
+            const log = document.getElementById('chat-log');
+            const typing = document.getElementById('typing');
+
+            for (let line of act.lines) {
+                typing.innerText = "L. está digitando...";
+                await new Promise(r => setTimeout(r, 2000 + line.length * 30));
+                
+                let text = line.replace(/{nome}/g, config.name.toUpperCase())
+                               .replace(/{oa}/g, config.gender === 'm' ? 'o' : 'a')
+                               .replace(/{bateria}/g, config.battery);
+
+                if(config.sanity < 40) text = text.replace(/[aeiou]/gi, "†");
+
+                const d = document.createElement('div');
+                d.className = `msg l ${config.sanity < 50 ? 'glitch' : ''}`;
+                d.innerText = text;
+                log.appendChild(d);
+                log.scrollTop = log.scrollHeight;
+                
+                document.getElementById('sfx-type').volume = 0.2;
+                document.getElementById('sfx-type').play();
+                
+                typing.innerText = "";
+                await new Promise(r => setTimeout(r, 1200));
+            }
+
+            if (act.crash) {
+                triggerCrash();
+            } else {
+                renderChoices(act.choices);
+            }
+        }
+
+        function renderChoices(opts) {
+            const ui = document.getElementById('choices-ui');
+            ui.innerHTML = "";
+            opts.forEach(o => {
+                const b = document.createElement('button');
+                b.className = "choice-btn";
+                b.innerText = o.text.replace(/{oa}/g, config.gender === 'm' ? 'o' : 'a');
+                b.onclick = async () => {
+                    ui.innerHTML = "";
+                    const d = document.createElement('div');
+                    d.className = "msg p";
+                    d.innerText = b.innerText;
+                    document.getElementById('chat-log').appendChild(d);
+                    
+                    if(o.san) config.sanity += o.san;
+                    if(o.fail) {
+                        await new Promise(r => setTimeout(r, 1000));
+                        const s = document.createElement('div');
+                        s.className = "msg sys";
+                        s.innerText = o.fail;
+                        document.getElementById('chat-log').appendChild(s);
+                    }
+                    if(o.scream) document.getElementById('sfx-scream').play();
+                    
+                    await new Promise(r => setTimeout(r, 2000));
+                    playAct(idx + 1); // Avanço simplificado
+                };
+                ui.appendChild(b);
+            });
+            // Gambiarra para o avanço dos atos não bugar
+            window.idx = (window.idx || 0) + 1;
+        }
+
+        async function triggerCrash() {
+            await new Promise(r => setTimeout(r, 1000));
+            document.getElementById('game-interface').style.display = 'none';
+            document.getElementById('home-screen').style.display = 'flex';
+            document.getElementById('background-eyes').style.opacity = "0.5";
+            
+            const box = document.getElementById('notif-box');
+            const msgs = ["ME AJUDA!", "ESTÁ QUEIMANDO!", `ASSASSIN${config.gender === 'm' ? 'O' : 'A'}!`, "OLHE PARA TRÁS!"];
+            
+            for (let i = 0; i < 20; i++) {
+                await new Promise(r => setTimeout(r, 250));
+                const n = document.createElement('div');
+                n.className = "notif";
+                n.style.top = (Math.random() * 80) + "%";
+                n.innerHTML = `<strong>L.</strong><br>${msgs[i % msgs.length]}`;
+                box.appendChild(n);
+                document.getElementById('sfx-notif').play();
+            }
+
+            await new Promise(r => setTimeout(r, 3000));
+            document.getElementById('flash').style.display = 'flex';
+            document.getElementById('f-img').src = horrorImgs[0];
+            document.getElementById('sfx-scream').play();
+            
+            setTimeout(() => {
+                document.getElementById('flash').style.display = 'none';
+                document.getElementById('home-screen').style.display = 'none';
+                document.getElementById('game-interface').style.display = 'flex';
+                document.getElementById('broken-glass').style.opacity = "0.8";
+                playAct(4);
+            }, 300);
+        }
+
+        function finalize() {
+            document.body.innerHTML = `<div class="screen" style="color:red;"><h1>ÚLTIMA VISUALIZAÇÃO</h1><p>L. agora usa seus olhos, ${config.name.toUpperCase()}.</p><img src="${horrorImgs[0]}" style="width:250px; filter:invert(1);"><button class="choice-btn" style="width:200px; text-align:center;" onclick="location.reload()">REINICIAR</button></div>`;
+            document.getElementById('sfx-scream').play();
+        }
+    </script>
+</body>
+</html>
